@@ -58,16 +58,23 @@ def on_startup():
     finally:
         db.close()
 
-# CORS configuration supporting localhost & 127.0.0.1 on all dev ports
+# CORS configuration supporting localhost & Vercel deployment domains
+_cors_origins = list(settings.BACKEND_CORS_ORIGINS) if settings.BACKEND_CORS_ORIGINS else []
+for _orig in [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+    "https://frontend-siva-8993.vercel.app",
+    "https://sportiq-2.onrender.com",
+]:
+    if _orig not in _cors_origins:
+        _cors_origins.append(_orig)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$",
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$|^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

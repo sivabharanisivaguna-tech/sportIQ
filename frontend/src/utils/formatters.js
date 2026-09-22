@@ -140,6 +140,17 @@ export const getImageUrl = (path) => {
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
     return path;
   }
-  const backendBase = import.meta.env.VITE_SERVER_URL || 'http://127.0.0.1:8000';
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.startsWith('192.168.') ||
+      window.location.hostname.startsWith('10.'));
+
+  const defaultServerUrl = isLocalhost
+    ? 'http://127.0.0.1:8000'
+    : 'https://sportiq-2.onrender.com';
+
+  const backendBase = import.meta.env.VITE_SERVER_URL || defaultServerUrl;
   return `${backendBase}${path.startsWith('/') ? '' : '/'}${path}`;
 };
