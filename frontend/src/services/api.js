@@ -1,29 +1,36 @@
 import axios from 'axios';
 
-const isLocalhost =
-  typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    window.location.hostname.startsWith('192.168.') ||
-    window.location.hostname.startsWith('10.'));
-
-const DEFAULT_API_URL = isLocalhost
-  ? 'http://127.0.0.1:8000/api/v1'
-  : 'https://sportiq-2.onrender.com/api/v1';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.')) {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+  }
+  return 'https://sportiq-2.onrender.com/api/v1';
+};
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 15000,
 });
 
-// Request Interceptor: Attach JWT Bearer Token
+// Request Interceptor: Attach JWT Bearer Token and enforce live backend if deployed
 api.interceptors.request.use(
   (config) => {
+    if (typeof window !== 'undefined' && window.location) {
+      const host = window.location.hostname;
+      const isLocal = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.');
+      if (!isLocal && (!config.baseURL || config.baseURL.includes('127.0.0.1') || config.baseURL.includes('localhost'))) {
+        config.baseURL = 'https://sportiq-2.onrender.com/api/v1';
+      }
+    }
     const token = localStorage.getItem('sportiq_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

@@ -55,7 +55,23 @@ class AuthService:
         db.commit()
         db.refresh(new_user)
 
-        # 4. Generate JWT Access Token
+        # 4. If registering as a PLAYER, initialize their player profile immediately
+        if new_user.role == UserRole.PLAYER:
+            new_player = Player(
+                user_id=new_user.id,
+                sport="Football",
+                position="Forward",
+                age=20,
+                gender="Male",
+                experience=1,
+                height=175.0,
+                weight=70.0,
+                achievements="Newly registered athlete"
+            )
+            db.add(new_player)
+            db.commit()
+
+        # 5. Generate JWT Access Token
         access_token = create_access_token(
             subject=new_user.id,
             role=new_user.role.value,

@@ -1,15 +1,17 @@
-const isLocalhost =
-  typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    window.location.hostname.startsWith('192.168.') ||
-    window.location.hostname.startsWith('10.'));
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.')) {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+  }
+  return 'https://sportiq-2.onrender.com/api/v1';
+};
 
-const DEFAULT_API_URL = isLocalhost
-  ? 'http://127.0.0.1:8000/api/v1'
-  : 'https://sportiq-2.onrender.com/api/v1';
-
-export const API_BASE_URL = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
+export const API_BASE_URL = getApiBaseUrl();
 
 export const USER_ROLES = {
   PLAYER: 'PLAYER',

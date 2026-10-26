@@ -140,17 +140,19 @@ export const getImageUrl = (path) => {
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
     return path;
   }
-  const isLocalhost =
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.hostname.startsWith('192.168.') ||
-      window.location.hostname.startsWith('10.'));
+  const getServerBaseUrl = () => {
+    if (import.meta.env.VITE_SERVER_URL) {
+      return import.meta.env.VITE_SERVER_URL;
+    }
+    if (typeof window !== 'undefined' && window.location) {
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.')) {
+        return 'http://127.0.0.1:8000';
+      }
+    }
+    return 'https://sportiq-2.onrender.com';
+  };
 
-  const defaultServerUrl = isLocalhost
-    ? 'http://127.0.0.1:8000'
-    : 'https://sportiq-2.onrender.com';
-
-  const backendBase = import.meta.env.VITE_SERVER_URL || defaultServerUrl;
+  const backendBase = getServerBaseUrl();
   return `${backendBase}${path.startsWith('/') ? '' : '/'}${path}`;
 };

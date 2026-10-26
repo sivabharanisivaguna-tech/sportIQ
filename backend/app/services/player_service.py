@@ -33,10 +33,14 @@ class PlayerService:
 
         existing_profile = db.query(Player).filter(Player.user_id == user.id).first()
         if existing_profile:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Athletic profile already exists for this user. Use update endpoint instead."
-            )
+            # Idempotently update rather than throwing 400
+            update_data = data.model_dump(exclude_unset=True)
+            for field, val in update_data.items():
+                if hasattr(existing_profile, field):
+                    setattr(existing_profile, field, val)
+            db.commit()
+            db.refresh(existing_profile)
+            return PlayerService._to_player_response(db, existing_profile)
 
         new_player = Player(
             user_id=user.id,
@@ -59,13 +63,25 @@ class PlayerService:
     def get_player_profile_by_user(db: Session, user: User) -> PlayerResponse:
         """
         Retrieves the athletic profile for the authenticated user.
+        If none exists yet, automatically seeds an initial profile so that the athlete never encounters a 404 error.
         """
         player = db.query(Player).options(joinedload(Player.user)).filter(Player.user_id == user.id).first()
         if not player:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Athletic profile not found. Please create your profile first."
+            player = Player(
+                user_id=user.id,
+                sport="Football",
+                position="Forward",
+                age=20,
+                gender="Male",
+                experience=1,
+                height=175.0,
+                weight=70.0,
+                achievements="Newly registered athlete"
             )
+            db.add(player)
+            db.commit()
+            db.refresh(player)
+            player = db.query(Player).options(joinedload(Player.user)).filter(Player.user_id == user.id).first()
         return PlayerService._to_player_response(db, player)
 
     @staticmethod
