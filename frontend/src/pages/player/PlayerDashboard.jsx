@@ -67,9 +67,16 @@ export const PlayerDashboard = () => {
 
         setStats(
           statsData || {
-            total_records: 14,
-            avg_score: 84.8,
-            best_score: 93.5,
+            total_matches_played: 18,
+            avg_speed: 88.5,
+            max_speed: 94.0,
+            avg_stamina: 85.0,
+            avg_strength: 81.0,
+            avg_agility: 92.5,
+            avg_accuracy: 87.0,
+            total_records: 18,
+            avg_score: 86.8,
+            best_score: 94.0,
             latest_potential: 'HIGH',
           }
         );
@@ -77,16 +84,31 @@ export const PlayerDashboard = () => {
           histData?.records?.length
             ? histData.records
             : [
-                { id: 1, date: '2026-10-20', drill_type: 'Sprint & Acceleration', score: 88, metrics: { speed: 89, stamina: 85 } },
-                { id: 2, date: '2026-10-22', drill_type: 'Agility & Reaction', score: 92, metrics: { agility: 94, tactical_iq: 87 } },
-                { id: 3, date: '2026-10-25', drill_type: 'Ball Control & Passing', score: 85, metrics: { skill: 88, strength: 80 } },
+                { id: 1, assessment_date: '2026-10-10', speed: 82, stamina: 79, strength: 75, agility: 86, accuracy: 80 },
+                { id: 2, assessment_date: '2026-10-14', speed: 85, stamina: 81, strength: 77, agility: 88, accuracy: 83 },
+                { id: 3, assessment_date: '2026-10-18', speed: 87, stamina: 83, strength: 79, agility: 91, accuracy: 85 },
+                { id: 4, assessment_date: '2026-10-22', speed: 89, stamina: 85, strength: 81, agility: 93, accuracy: 87 },
+                { id: 5, assessment_date: '2026-10-26', speed: 91, stamina: 86, strength: 82, agility: 94, accuracy: 89 },
               ]
         );
         setRecommendations(
           recsData?.length
             ? recsData
             : [
-                { id: 1, coach_name: 'Coach Pep', title: 'High-intensity interval stamina training', status: 'Assigned' },
+                {
+                  id: 1,
+                  title: 'High-Intensity Interval Sprint Mechanics',
+                  description: 'Perform 6x40m progressive acceleration sprints with 90s recovery, focusing on front-side knee elevation.',
+                  status: 'ACTIVE',
+                  coach_name: 'Jurgen Klopp',
+                },
+                {
+                  id: 2,
+                  title: 'Cognitive Reaction & Direction Change',
+                  description: '4-cone reactive agility drill with randomized visual cues to improve decision-making under match fatigue.',
+                  status: 'ASSIGNED',
+                  coach_name: 'Pep Guardiola',
+                },
               ]
         );
 
@@ -97,6 +119,9 @@ export const PlayerDashboard = () => {
               talent_score: 89,
               potential_level: 'HIGH',
               confidence_score: 93,
+              strengths: 'Elite explosive acceleration, exceptional change-of-direction agility, and strong forward tactical awareness.',
+              weaknesses: 'Upper-body physical resistance during contested duels; slight deceleration on defensive transitions.',
+              recommendations: 'Incorporate eccentric hamstring loading and progressive resistance agility ladders to maximize top-end sprint stamina.',
               radar_metrics: {
                 speed: 88,
                 stamina: 84,
@@ -114,6 +139,9 @@ export const PlayerDashboard = () => {
             talent_score: 89,
             potential_level: 'HIGH',
             confidence_score: 93,
+            strengths: 'Elite explosive acceleration, exceptional change-of-direction agility, and strong forward tactical awareness.',
+            weaknesses: 'Upper-body physical resistance during contested duels; slight deceleration on defensive transitions.',
+            recommendations: 'Incorporate eccentric hamstring loading and progressive resistance agility ladders to maximize top-end sprint stamina.',
             radar_metrics: {
               speed: 88,
               stamina: 84,

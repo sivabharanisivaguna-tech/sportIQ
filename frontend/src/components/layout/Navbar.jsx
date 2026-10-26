@@ -53,6 +53,42 @@ export const Navbar = ({ onToggleSidebar }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getHomeLink = () => {
+    if (!user) return '/';
+    switch (user.role) {
+      case 'PLAYER':
+        return '/player/dashboard';
+      case 'COACH':
+        return '/coach/dashboard';
+      case 'SCOUT':
+        return '/scout/dashboard';
+      case 'ORGANIZER':
+        return '/organizer/dashboard';
+      case 'ADMIN':
+        return '/admin/dashboard';
+      default:
+        return '/';
+    }
+  };
+
+  const getProfileLink = () => {
+    if (!user) return '/login';
+    switch (user.role) {
+      case 'ADMIN':
+        return '/admin/profile';
+      case 'PLAYER':
+        return '/player/profile';
+      case 'ORGANIZER':
+        return '/organizer/profile';
+      case 'COACH':
+        return '/coach/dashboard';
+      case 'SCOUT':
+        return '/scout/dashboard';
+      default:
+        return '/';
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -71,20 +107,92 @@ export const Navbar = ({ onToggleSidebar }) => {
           <Menu className="w-5 h-5" />
         </button>
 
-        <Link to="/" className="flex items-center gap-2.5">
+        <Link to={getHomeLink()} className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] shadow-sm">
             <Activity className="h-5 w-5 text-[#F8FAFC]" />
           </div>
           <span className="font-display text-xl font-bold tracking-tight text-[#F8FAFC]">
             Sport<span className="text-[#06B6D4]">IQ</span>
           </span>
-          {user?.role === 'ADMIN' && (
-            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 text-[10px] font-extrabold uppercase tracking-wider ml-1">
-              Admin Portal
+          {user?.role && (
+            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-[#2563EB]/10 text-[#06B6D4] border border-[#06B6D4]/30 text-[10px] font-extrabold uppercase tracking-wider ml-1">
+              {user.role} Workspace
             </span>
           )}
         </Link>
       </div>
+
+      {/* Center Quick Navigation Links */}
+      {user && (
+        <nav className="hidden md:flex items-center gap-1 bg-[#0B1220] px-2 py-1 rounded-xl border border-[#1E293B]">
+          <Link
+            to={getHomeLink()}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+          >
+            Dashboard
+          </Link>
+          {user.role === 'PLAYER' && (
+            <>
+              <Link
+                to="/player/profile"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/player/performance"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+              >
+                Performance
+              </Link>
+              <Link
+                to="/player/video-analysis"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#06B6D4] hover:bg-[#06B6D4]/10 transition-all flex items-center gap-1"
+              >
+                <span>AI Video</span>
+              </Link>
+            </>
+          )}
+          {user.role === 'COACH' && (
+            <>
+              <Link
+                to="/coach/players"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+              >
+                Discovery
+              </Link>
+              <Link
+                to="/coach/compare"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+              >
+                Compare
+              </Link>
+            </>
+          )}
+          {user.role === 'SCOUT' && (
+            <Link
+              to="/scout/shortlist"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+            >
+              Shortlist
+            </Link>
+          )}
+          {user.role === 'ADMIN' && (
+            <Link
+              to="/admin/users"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+            >
+              Users
+            </Link>
+          )}
+          <Link
+            to="/events"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#111C2E] transition-all"
+          >
+            Events
+          </Link>
+        </nav>
+      )}
 
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Admin Notifications Bell */}
@@ -162,7 +270,7 @@ export const Navbar = ({ onToggleSidebar }) => {
         {user ? (
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              to={user.role === 'ADMIN' ? '/admin/profile' : user.role === 'PLAYER' ? '/player/profile' : user.role === 'ORGANIZER' ? '/organizer/profile' : '#'}
+              to={getProfileLink()}
               className="hidden sm:flex flex-col items-end hover:opacity-80 transition-opacity"
             >
               <span className="text-xs sm:text-sm font-semibold text-[#F8FAFC]">{user.name}</span>

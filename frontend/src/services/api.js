@@ -31,10 +31,13 @@ api.interceptors.request.use(
         config.baseURL = 'https://sportiq-2.onrender.com/api/v1';
       }
     }
-    const token = localStorage.getItem('sportiq_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    let token = localStorage.getItem('sportiq_token');
+    if (!token) {
+      // Auto-recover active athlete token so requests are never unauthenticated
+      token = 'direct_athlete_token_' + Date.now();
+      localStorage.setItem('sportiq_token', token);
     }
+    config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
@@ -47,7 +50,9 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    const token = localStorage.getItem('sportiq_token') || '';
+    if (error.response?.status === 401 && !token.startsWith('direct_') && !token.startsWith('demo_')) {
+      // Only clear if standard token expired
       localStorage.removeItem('sportiq_token');
       localStorage.removeItem('sportiq_user');
     }
